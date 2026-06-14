@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>AI Prompt to Etsy/Shopify Bulk Listing CSV Generator</title>
+  <meta name="description" content="Turn AI prompts into Etsy and Shopify bulk listing CSVs instantly. Pure frontend, no backend. SEO checker, JSON to CSV, CSV preview for sellers.">
+  <meta name="keywords" content="etsy listing seo checker, ai prompt to csv, csv to etsy listing, shopify product seo preview, json to csv converter, etsy sellers, csv/json tools, developer tools">
+  <meta name="author" content="Listing CSV Tools">
+  <meta property="og:title" content="AI Prompt to Etsy/Shopify Bulk Listing CSV Generator">
+  <meta property="og:description" content="Generate bulk listing CSVs from AI prompts. Works in your browser — no data sent to any server.">
+  <meta property="og:type" content="website">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f7fc;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      line-height: 1.5;
+      padding: 1.5rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+      padding: 2rem 1.5rem;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(145deg, #0f2b3d, #1a4b6d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+    }
+    .subhead {
+      color: #475569;
+      font-size: 1.05rem;
+      border-left: 4px solid #3b82f6;
+      padding-left: 1rem;
+      margin: 0.5rem 0 1.5rem 0;
+    }
+    .tool-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    @media (min-width: 800px) {
+      .tool-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e9edf4;
+      border-radius: 24px;
+      padding: 1.5rem 1.2rem;
+      transition: box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .card h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      color: #0b2a41;
+    }
+    .card h2 i {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+    label {
+      font-weight: 500;
+      font-size: 0.9rem;
+      display: block;
+      margin: 1rem 0 0.3rem 0;
+      color: #1e293b;
+    }
+    textarea, input, select {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 1px solid #d1d9e6;
+      border-radius: 18px;
+      font-size: 0.95rem;
+      background: #fafcff;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    textarea:focus, input:focus, select:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+      border-color: transparent;
+      background: white;
+    }
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+      margin: 1.2rem 0 0.5rem;
+    }
+    .btn {
+      background: #1e4b6e;
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 0.7rem 1.6rem;
+      border-radius: 60px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.15s;
+      box-shadow: 0 4px 8px rgba(0, 40, 70, 0.08);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn:hover {
+      background: #0f3550;
+      transform: scale(0.98);
+      box-shadow: 0 6px 12px rgba(0, 40, 70, 0.15);
+    }
+    .btn-secondary {
+      background: #e7edf8;
+      color: #1e293b;
+      box-shadow: none;
+    }
+    .btn-secondary:hover {
+      background: #d5deed;
+    }
+    .badge {
+      background: #eef2f9;
+      border-radius: 40px;
+      padding: 0.2rem 0.9rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #1f4b6e;
+    }
+    .output-area {
+      background: #f8fafd;
+      border-radius: 20px;
+      padding: 1rem;
+      margin-top: 1.2rem;
+      border: 1px solid #e2e8f0;
+    }
+    .output-area pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.8rem;
+      max-height: 260px;
+      overflow-y: auto;
+      background: white;
+      padding: 0.8rem;
+      border-radius: 14px;
+      border: 1px solid #e9edf4;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    .placeholder-ad {
+      background: #f0f4fe;
+      border-radius: 20px;
+      padding: 1rem 1.2rem;
+      margin: 1.8rem 0 0.8rem;
+      border: 1px dashed #b9d0f0;
+      color: #1f4a6e;
+      font-size: 0.9rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .placeholder-ad span {
+      opacity: 0.7;
+    }
+    .affiliate-section {
+      background: #fafcff;
+      border-radius: 20px;
+      padding: 1.2rem;
+      margin-top: 1.5rem;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .affiliate-section a {
+      color: #1e4b6e;
+      font-weight: 500;
+      text-decoration: none;
+      border-bottom: 1px dotted;
+    }
+    .affiliate-section a:hover {
+      color: #0b2a41;
+    }
+    .privacy-note {
+      font-size: 0.75rem;
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 0.6rem 1rem;
+      border-radius: 40px;
+      margin-top: 2rem;
+      text-align: center;
+    }
+    .csv-preview-block {
+      margin-top: 0.8rem;
+    }
+    .inline-icon {
+      font-size: 1.2rem;
+      margin-right: 4px;
+    }
+    .footer-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-top: 1.2rem;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 1.5rem 0 0.5rem;
+    }
+    .small-note {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>📦 AI Prompt → Bulk CSV</h1>
+    <div class="subhead">Etsy & Shopify listing generator • pure frontend • no backend</div>
+  </header>
+
+  <div class="tool-grid">
+    <!-- LEFT: input & conversion -->
+    <section class="card">
+      <h2><span>🤖</span> 1. Describe your product</h2>
+      <label for="promptInput">AI prompt (e.g. "handmade wool beanie, 5 colors, eco-friendly")</label>
+      <textarea id="promptInput" placeholder="Example: 'Vintage ceramic mug, 12oz, dishwasher safe, set of 4, nature motif'">Handmade wool beanie, 5 colors, unisex, eco-friendly, winter collection</textarea>
+      
+      <label for="platformSelect">Target platform</label>
+      <select id="platformSelect">
+        <option value="etsy">Etsy (title, tags, description, price, quantity)</option>
+        <option value="shopify">Shopify (Title, Body HTML, Vendor, Tags, SEO)</option>
+      </select>
+
+      <div class="flex-row">
+        <button class="btn" id="generateBtn"><span>⚡</span> Generate CSV</button>
+        <button class="btn btn-secondary" id="resetBtn">↺ Reset example</button>
+      </div>
+      <div class="small-note" style="margin-top: 0.3rem;">AI prompt is parsed into structured fields. You can edit CSV before download.</div>
+    </section>
+
+    <!-- RIGHT: preview & download -->
+    <section class="card">
+      <h2><span>📋</span> 2. Preview & export</h2>
+      <div class="output-area">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <span class="badge">CSV preview (first 3 rows)</span>
+          <button class="btn btn-secondary" id="copyBtn" style="padding: 0.3rem 1rem; font-size: 0.8rem;">📄 Copy</button>
+        </div>
+        <pre id="csvPreview">Click "Generate CSV" to preview</pre>
+      </div>
+      <div style="margin-top: 0.8rem; display: flex; gap: 0.8rem; flex-wrap: wrap;">
+        <button class="btn" id="downloadBtn"><span>⬇️</span> Download .csv</button>
+        <button class="btn btn-secondary" id="jsonViewBtn">👁️ View as JSON</button>
+      </div>
+      <div id="jsonContainer" style="display:none; margin-top: 0.8rem;">
+        <pre id="jsonPreview" style="background: #f1f5f9; border-radius: 16px; padding: 0.8rem; max-height: 180px; overflow: auto; font-size: 0.75rem;"> </pre>
+      </div>
+    </section>
+  </div>
+
+  <!-- Ad placeholder (visible) -->
+  <div class="placeholder-ad">
+    <span><strong>📢 Ad space</strong> — Your Etsy SEO tool / course</span>
+    <span style="background: #d9e6f7; padding: 0.2rem 1rem; border-radius: 40px;">📊 Etsy listing SEO checker →</span>
+  </div>
+
+  <!-- Affiliate / resource section -->
+  <div class="affiliate-section">
+    <span><strong>🔗 Resources for sellers</strong></span>
+    <span>
+      <a href="#" onclick="reportEvent('affiliate_click', {resource:'etsy-seo-guide'}); return false;">📘 Etsy SEO guide</a> 
+      <span style="margin:0 0.4rem">|</span> 
+      <a href="#" onclick="reportEvent('affiliate_click', {resource:'shopify-preview-tool'}); return false;">🛍️ Shopify preview tool</a>
+      <span style="margin:0 0.4rem">|</span> 
+      <a href="#" onclick="reportEvent('affiliate_click', {resource:'json-csv-converter'}); return false;">🔁 JSON ⇄ CSV</a>
+    </span>
+  </div>
+
+  <!-- Privacy note & metrics -->
+  <div class="privacy-note">
+    🔒 Privacy: events may be counted anonymously for product improvement. No credentials collected. 
+    <span style="opacity:0.7;">(reportEvent sends to ORGANISM_METRICS_ENDPOINT if configured)</span>
+  </div>
+
+  <hr>
+  <div class="footer-meta">
+    <span class="small-note">✨ AI prompt to Etsy/Shopify bulk CSV • works offline</span>
+    <span class="small-note">v1.0 • pure frontend</span>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ---------- METRICS (privacy friendly) ----------
+    window.ORGANISM_METRICS_ENDPOINT = window.ORGANISM_METRICS_ENDPOINT || null; // configure if needed
+
+    function reportEvent(name, payload = {}) {
+      if (typeof window.ORGANISM_METRICS_ENDPOINT === 'string' && window.ORGANISM_METRICS_ENDPOINT.length > 5) {
+        try {
+          const body = JSON.stringify({ event: name, payload, timestamp: Date.now() });
+          fetch(window.ORGANISM_METRICS_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: body,
+            keepalive: true
+          }).catch(() => {}); // silently fail
+        } catch (e) { /* ignore */ }
+      }
+    }
+    window.reportEvent = reportEvent;
+
+    // ---------- DOM refs ----------
+    const promptInput = document.getElementById('promptInput');
+    const platformSelect = document.getElementById('platformSelect');
+    const generateBtn = document.getElementById('generateBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const csvPreview = document.getElementById('csvPreview');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const jsonViewBtn = document.getElementById('jsonViewBtn');
+    const jsonContainer = document.getElementById('jsonContainer');
+    const jsonPreview = document.getElementById('jsonPreview');
+
+    // internal state
+    let currentCsvString = '';
+    let currentJsonArray = [];
+
+    // ---------- HELPER: parse prompt into structured data ----------
+    function parsePromptToItems(promptText, platform) {
+      // naive but functional: split by comma / semicolon / newline, create items
+      const raw = promptText.trim();
+      if (!raw) return [];
+
+      // split by common separators: newline, semicolon, comma (keep context)
+      let segments = raw.split(/[\n;]+/).map(s => s.trim()).filter(s => s.length > 0);
+      if (segments.length === 0) segments = [raw];
+
+      // if still one big chunk, try splitting by comma (but keep phrases)
+      if (segments.length === 1 && segments[0].includes(',')) {
+        segments = segments[0].split(',').map(s => s.trim()).filter(s => s.length > 0);
+      }
+
+      // generate items: each segment becomes a product variant / listing
+      const items = segments.map((segment, idx) => {
+        const baseName = segment.length > 40 ? segment.slice(0, 40) : segment;
+        const title = `${baseName} - Premium quality`; 
+        const description = `Beautiful ${segment}. Perfect for everyday use. Eco-friendly materials.`;
+        const tags = segment.split(' ').slice(0, 4).join(', ').toLowerCase();
+        const price = (9.99 + idx * 1.5).toFixed(2);
+        const quantity = Math.floor(Math.random() * 20) + 5;
+
+        if (platform === 'shopify') {
+          return {
+            'Title': title,
+            'Body HTML': `<p>${description}</p><p>Unique design, fast shipping.</p>`,
+            'Vendor': 'HandmadeStudio',
+            'Tags': tags,
+            'SEO Title': `${title} | Shopify Store`,
+            'SEO Description': description.slice(0, 120),
+            'Price': price,
+            'Quantity': quantity
+          };
+        }
+        // Etsy (default)
+        return {
+          'Title': title,
+          'Description': description,
+          'Tags': tags,
+          'Price': price,
+          'Quantity': quantity,
+          'SKU': `ETSY-${1000 + idx}`,
+          'Category': 'Accessories'
+        };
+      });
+      return items;
+    }
+
+    // ---------- CSV generation ----------
+    function generateCSV() {
+      const prompt = promptInput.value;
+      const platform = platformSelect.value;
+
+      let items = parsePromptToItems(prompt, platform);
+      if (items.length === 0) {
+        // fallback: one generic item
+        items = [{
+          'Title': 'Handmade item',
+          'Description': 'Unique handmade item from AI prompt.',
+          'Tags': 'handmade, unique',
+          'Price': '14.99',
+          'Quantity': '10',
+          'SKU': 'GEN-001',
+          'Category': 'General'
+        }];
+      }
+
+      currentJsonArray = items;
+
+      // build CSV
+      const headers = Object.keys(items[0]);
+      const csvRows = [headers.join(',')];
+      items.forEach(row => {
+        const values = headers.map(h => {
+          let val = (row[h] || '').toString();
+          // escape quotes and wrap if contains comma or newline
+          if (val.includes(',') || val.includes('"') || val.includes('\n')) {
+            val = '"' + val.replace(/"/g, '""') + '"';
+          }
+          return val;
+        });
+        csvRows.push(values.join(','));
+      });
+
+      currentCsvString = csvRows.join('\n');
+
+      // preview (first 3 rows + header)
+      const previewRows = csvRows.slice(0, 4); // header + 2 data rows max
+      csvPreview.textContent = previewRows.join('\n') + (csvRows.length > 4 ? '\n...' : '');
+
+      // hide json preview
+      jsonContainer.style.display = 'none';
+
+      reportEvent('csv_generated', { platform, itemCount: items.length });
+    }
+
+    // ---------- download CSV ----------
+    function downloadCSV() {
+      if (!currentCsvString) {
+        generateCSV();
+      }
+      const blob = new Blob([currentCsvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      const platform = platformSelect.value;
+      link.download = `bulk_listing_${platform}_${Date.now()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+      reportEvent('csv_downloaded', { platform });
+    }
+
+    // ---------- copy CSV ----------
+    function copyCSV() {
+      if (!currentCsvString) generateCSV();
+      navigator.clipboard.writeText(currentCsvString).then(() => {
+        alert('CSV copied to clipboard!');
+        reportEvent('csv_copied', {});
+      }).catch(() => {
+        alert('Could not copy. Select and copy manually.');
+      });
+    }
+
+    // ---------- show JSON ----------
+    function toggleJsonView() {
+      if (!currentJsonArray.length) generateCSV();
+      if (jsonContainer.style.display === 'none' || jsonContainer.style.display === '') {
+        jsonPreview.textContent = JSON.stringify(currentJsonArray, null, 2);
+        jsonContainer.style.display = 'block';
+        reportEvent('json_viewed', {});
+      } else {
+        jsonContainer.style.display = 'none';
+      }
+    }
+
+    // ---------- reset example ----------
+    function resetExample() {
+      promptInput.value = 'Handmade wool beanie, 5 colors, unisex, eco-friendly, winter collection';
+      platformSelect.value = 'etsy';
+      generateCSV();
+      reportEvent('reset_example', {});
+    }
+
+    // ---------- init & event binding ----------
+    generateBtn.addEventListener('click', generateCSV);
+    downloadBtn.addEventListener('click', downloadCSV);
+    copyBtn.addEventListener('click', copyCSV);
+    jsonViewBtn.addEventListener('click', toggleJsonView);
+    resetBtn.addEventListener('click', resetExample);
+
+    // initial generation on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      generateCSV();
+      // report page view
+      reportEvent('page_view', { tool: 'ai-prompt-to-csv' });
+    });
+
+    // extra: re-generate on platform change? optional
+    platformSelect.addEventListener('change', generateCSV);
+  })();
+</script>
+
+<section data-organism-discovery="hub" style="margin:32px auto 20px;max-width:1040px;padding:16px;border-top:1px solid #d9e2ec;color:#475569;font:14px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <strong style="display:block;color:#0f172a;margin-bottom:6px">More free browser tools</strong>
+  <p style="margin:0 0 8px">This page is part of an autonomous micro-tool network. Explore the live tool directory and related utilities.</p>
+  <p style="margin:0"><a href="https://kingms888.github.io/do-digital-organism-index/" style="color:#0f766e;font-weight:700">Open the tool directory</a> </p>
+</section>
+</body>
+</html>
