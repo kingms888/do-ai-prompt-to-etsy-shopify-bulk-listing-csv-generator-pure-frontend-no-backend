@@ -1,0 +1,1 @@
+# do-ai-prompt-to-etsy-shopify-bulk-listing-csv-generator-pure-frontend-no-backend
